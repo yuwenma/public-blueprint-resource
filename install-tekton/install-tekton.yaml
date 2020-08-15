@@ -148,9 +148,9 @@ metadata:
     app.kubernetes.io/instance: default
     app.kubernetes.io/part-of: tekton-pipelines
 rules:
-- # The webhook needs to be able to list and update customresourcedefinitions,
+- apiGroups: ["apiextensions.k8s.io"]
+  # The webhook needs to be able to list and update customresourcedefinitions,
   # mainly to update the webhook certificates.
-  apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions", "customresourcedefinitions/status"]
   verbs: ["get", "list", "update", "patch", "watch"]
 - apiGroups: ["admissionregistration.k8s.io"]
@@ -187,9 +187,8 @@ metadata:
   labels:
     app.kubernetes.io/instance: default
     app.kubernetes.io/part-of: tekton-pipelines
-rules:
-- # We uses leases for leaderelection
-  apiGroups: ["coordination.k8s.io"]
+rules: # We uses leases for leaderelection
+- apiGroups: ["coordination.k8s.io"]
   resources: ["leases"]
   verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
 
@@ -221,8 +220,8 @@ rules:
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["list", "watch"]
-- # The controller needs access to these configmaps for logging information and runtime configuration.
-  apiGroups: [""]
+- apiGroups: [""]
+  # The controller needs access to these configmaps for logging information and runtime configuration.
   resources: ["configmaps"]
   verbs: ["get"]
   resourceNames: ["config-logging", "config-observability", "config-artifact-bucket",
@@ -241,18 +240,18 @@ rules:
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["list", "watch"]
-- # The webhook needs access to these configmaps for logging information.
-  apiGroups: [""]
+- apiGroups: [""]
+  # The webhook needs access to these configmaps for logging information.
   resources: ["configmaps"]
   verbs: ["get"]
   resourceNames: ["config-logging", "config-observability", "config-leader-election"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["list", "watch"]
-- # The webhook daemon makes a reconciliation loop on webhook-certs. Whenever
+- apiGroups: [""]
+  # The webhook daemon makes a reconciliation loop on webhook-certs. Whenever
   # the secret changes it updates the webhook configurations with the certificates
   # stored in the secret.
-  apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "update"]
   resourceNames: ["webhook-certs"]
@@ -1663,8 +1662,8 @@ metadata:
   namespace: tekton-pipelines
 spec:
   ports:
-  - # Define metrics and profiling for them to be accessible within service meshes.
-    name: http-metrics
+  - name: http-metrics
+    # Define metrics and profiling for them to be accessible within service meshes.
     port: 9090
     targetPort: 9090
   - name: http-profiling
